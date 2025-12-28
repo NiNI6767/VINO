@@ -118,33 +118,35 @@ class MainActivity : AppCompatActivity() {
     private fun showCustomUrlDialog(webView: WebView) {
         val input = EditText(this)
         input.hint = "Вставте посилання на картинку"
+        input.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+        input.setTextColor(android.graphics.Color.WHITE)
 
-        // Повертаємо твій дизайн параметрів (lp)
+        // Створюємо контейнер
+        val container = LinearLayout(this)
+        container.orientation = LinearLayout.VERTICAL
+
+        // Перетворюємо 24dp (стандартний відступ заголовка Android) у пікселі
+        val density = resources.displayMetrics.density
+        val paddingInDp = (24 * density).toInt()
+
+        // Встановлюємо відступ саме для КОНТЕЙНЕРА (зліва та справа)
+        container.setPadding(paddingInDp, 20, paddingInDp, 0)
+
+        // Для самого EditText ставимо MATCH_PARENT, щоб він розтягнувся всередині відступів
         val lp = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-
-        // ДОДАЄМО ВІДСТУП (щоб лінія була під словом "Ваша")
-        // 60 пікселів зліва та справа
-        lp.setMargins(60, 0, 60, 0)
         input.layoutParams = lp
 
-        // Створюємо контейнер, щоб відступи спрацювали
-        val container = LinearLayout(this)
         container.addView(input)
 
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
             .setTitle("Ваша тема")
-            .setView(container) // Вставляємо контейнер замість просто input
+            .setView(container) // Тепер лінія почнеться рівно під "В" у слові "Ваша"
             .setPositiveButton("Застосувати") { _, _ ->
                 val url = input.text.toString()
-                currentThemeScript = """
-                document.body.style.backgroundImage = "url('$url')";
-                document.body.style.backgroundSize = "cover";
-                document.body.style.backgroundAttachment = "fixed";
-            """.trimIndent()
-                webView.evaluateJavascript("javascript:(function() { $currentThemeScript })()", null)
+                // ... твій код завантаження теми
             }
             .show()
     }
