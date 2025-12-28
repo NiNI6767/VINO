@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         // ВСТАНОВЛЮЄМО ВЕЛИКИЙ ВІДСТУП (спробуй 85 або 100)
-        lp.setMargins(85, 0, 85, 0)
+        lp.setMargins(50,0, 50,0)
         input.layoutParams = lp
 
         // Створюємо контейнер (БЕЗ НЬОГО ВІДСТУП НЕ ПРАЦЮЄ)
