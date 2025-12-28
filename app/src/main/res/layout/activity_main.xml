@@ -67,7 +67,7 @@
             android:background="#1A1A1A"
             app:tabIndicatorGravity="top"
             app:tabMode="scrollable"
-            app:tabSelectedTextColor="#664FA3"
+            app:tabSelectedTextColor="#FFFFFF"
             app:tabTextColor="#BBBBBB" />
 
         <Button
