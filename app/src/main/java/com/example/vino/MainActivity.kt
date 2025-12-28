@@ -117,21 +117,35 @@ class MainActivity : AppCompatActivity() {
 
     private fun showCustomUrlDialog(webView: WebView) {
         val input = EditText(this)
-        input.hint = "     Вставте посилання на картинку"
-        val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        input.hint = "Вставте посилання на картинку"
+
+        // Повертаємо твій дизайн параметрів (lp)
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        // ДОДАЄМО ВІДСТУП (щоб лінія була під словом "Ваша")
+        // 60 пікселів зліва та справа
+        lp.setMargins(60, 0, 60, 0)
         input.layoutParams = lp
+
+        // Створюємо контейнер, щоб відступи спрацювали
+        val container = LinearLayout(this)
+        container.addView(input)
 
         AlertDialog.Builder(this)
             .setTitle("Ваша тема")
-            .setView(input)
+            .setView(container) // Вставляємо контейнер замість просто input
             .setPositiveButton("Застосувати") { _, _ ->
                 val url = input.text.toString()
                 currentThemeScript = """
-                    document.body.style.backgroundImage = "url('$url')";
-                    document.body.style.backgroundSize = "cover";
-                    document.body.style.backgroundAttachment = "fixed";
-                """.trimIndent()
+                document.body.style.backgroundImage = "url('$url')";
+                document.body.style.backgroundSize = "cover";
+                document.body.style.backgroundAttachment = "fixed";
+            """.trimIndent()
                 webView.evaluateJavascript("javascript:(function() { $currentThemeScript })()", null)
-            }.show()
+            }
+            .show()
     }
 }
