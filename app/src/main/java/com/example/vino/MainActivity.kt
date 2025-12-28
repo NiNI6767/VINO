@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.example.vino.R
 
 // ... твої імпорти (додай Button якщо підкреслює червоним)
 
