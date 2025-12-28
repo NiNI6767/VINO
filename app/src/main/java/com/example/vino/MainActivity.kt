@@ -8,110 +8,130 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.example.vino.R
-
-// ... твої імпорти (додай Button якщо підкреслює червоним)
+import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {
 
-    private var currentThemeScript: String = "" // Тут зберігаємо активний JS код теми
+    // Змінні для вкладок та тем
+    private val tabsList = mutableListOf("https://www.google.com")
+    private var currentTabIndex = 0
+    private var currentThemeScript: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Ініціалізація всіх елементів інтерфейсу
         val webView: WebView = findViewById(R.id.myWebView)
         val urlInput: EditText = findViewById(R.id.urlInput)
         val goButton: Button = findViewById(R.id.goButton)
-        val themeButton = findViewById<Button>(R.id.themeButton)
-        val vinoButton = findViewById<Button>(R.id.vinoButton)
+        val vinoButton: Button = findViewById(R.id.vinoButton)
+        val themeButton: Button = findViewById(R.id.themeButton)
+        val tabLayout: TabLayout = findViewById(R.id.tabLayout)
+        val newTabButton: Button = findViewById(R.id.newTabButton)
 
+        // Налаштування WebView
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                // Кожного разу, коли сторінка завантажилась, накладаємо вибрану тему
+
+                // 1. Оновлюємо URL у списку вкладок
+                url?.let { tabsList[currentTabIndex] = it }
+
+                // 2. Оновлюємо назву вкладки на заголовок сайту
+                tabLayout.getTabAt(currentTabIndex)?.text = view?.title ?: "Сайт"
+
+                // 3. Накладаємо тему, якщо вона вибрана
                 if (currentThemeScript.isNotEmpty()) {
                     view?.evaluateJavascript("javascript:(function() { $currentThemeScript })()", null)
                 }
             }
         }
 
-        webView.loadUrl("https://www.google.com")
+        // --- ЛОГІКА ВКЛАДОК ---
 
-        // КНОПКА ТЕМА
-        themeButton.setOnClickListener {
-            val mainOptions = arrayOf("Готові теми", "Власна тема (посилання)")
-            AlertDialog.Builder(this)
-                .setTitle("Налаштування вигляду")
-                .setItems(mainOptions) { _, which ->
-                    when (which) {
-                        0 -> showPresetThemes(webView) // Відкрити список готових
-                        1 -> showCustomUrlDialog(webView) // Відкрити вікно для посилання
-                    }
+        // Додаємо першу вкладку при старті
+        tabLayout.addTab(tabLayout.newTab().setText("Вкладка 1"))
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.let {
+                    currentTabIndex = it.position
+                    webView.loadUrl(tabsList[currentTabIndex])
                 }
-                .show()
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+
+        newTabButton.setOnClickListener {
+            tabsList.add("https://www.google.com")
+            val newTab = tabLayout.newTab().setText("Нова вкладка")
+            tabLayout.addTab(newTab)
+            newTab.select() // Перемикаємося на нову вкладку
         }
 
-        // Кнопка VINO (Додому)
+        // --- ЛОГІКА ТЕМ ---
+
+        themeButton.setOnClickListener {
+            val options = arrayOf("Готові теми", "Власна тема (посилання)")
+            AlertDialog.Builder(this)
+                .setTitle("Налаштування вигляду")
+                .setItems(options) { _, which ->
+                    if (which == 0) showPresetThemes(webView) else showCustomUrlDialog(webView)
+                }.show()
+        }
+
+        // --- КНОПКИ КЕРУВАННЯ ---
+
         vinoButton.setOnClickListener {
             webView.loadUrl("https://www.google.com")
         }
 
-        // Кнопка GO
         goButton.setOnClickListener {
             val query = urlInput.text.toString()
-            webView.loadUrl("https://www.google.com/search?q=$query")
+            val url = if (query.startsWith("http")) query else "https://www.google.com/search?q=$query"
+            webView.loadUrl(url)
         }
+
+        // Завантаження початкової сторінки
+        webView.loadUrl(tabsList[0])
     }
 
-    // МЕНЮ ГОТОВИХ ТЕМ
     private fun showPresetThemes(webView: WebView) {
-        val themes = arrayOf("Стандартна (Біла)", "Темна ніч", "Матриця (Зелена)", "Кіберпанк (Рожева)")
+        val themes = arrayOf("Стандартна", "Темна", "Матриця")
         AlertDialog.Builder(this)
             .setTitle("Виберіть стиль")
             .setItems(themes) { _, which ->
                 currentThemeScript = when (which) {
                     1 -> "document.body.style.backgroundColor = '#121212'; document.body.style.color = 'white';"
-                    2 -> "document.body.style.backgroundColor = 'black'; document.body.style.color = '#00FF41'; var a = document.getElementsByTagName('a'); for(i=0;i<a.length;i++) a[i].style.color='#00FF41';"
-                    3 -> "document.body.style.backgroundColor = '#2b213a'; document.body.style.color = '#ff00ff';"
-                    else -> "location.reload(); \"\"" // Скидання
+                    2 -> "document.body.style.backgroundColor = 'black'; document.body.style.color = '#00FF41';"
+                    else -> "location.reload(); \"\""
                 }
                 webView.evaluateJavascript("javascript:(function() { $currentThemeScript })()", null)
-            }
-            .show()
+            }.show()
     }
 
-    // ВІКНО ДЛЯ ВЛАСНОГО ПОСИЛАННЯ
     private fun showCustomUrlDialog(webView: WebView) {
         val input = EditText(this)
-        input.hint = "https://example.com/image.jpg"
-        val container = LinearLayout(this)
-        container.orientation = LinearLayout.VERTICAL
-        val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        params.setMargins(50, 20, 50, 0)
-        input.layoutParams = params
-        container.addView(input)
+        input.hint = "Вставте посилання на картинку"
+        val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        input.layoutParams = lp
 
         AlertDialog.Builder(this)
-            .setTitle("Ваше зображення")
-            .setMessage("Вставте пряме посилання на картинку:")
-            .setView(container)
+            .setTitle("Ваша тема")
+            .setView(input)
             .setPositiveButton("Застосувати") { _, _ ->
                 val url = input.text.toString()
-                if (url.isNotEmpty()) {
-                    currentThemeScript = """
-                        document.body.style.backgroundImage = "url('$url')";
-                        document.body.style.backgroundSize = "cover";
-                        document.body.style.backgroundAttachment = "fixed";
-                        document.body.style.color = "white";
-                    """.trimIndent()
-                    webView.evaluateJavascript("javascript:(function() { $currentThemeScript })()", null)
-                }
-            }
-            .setNegativeButton("Скасувати", null)
-            .show()
+                currentThemeScript = """
+                    document.body.style.backgroundImage = "url('$url')";
+                    document.body.style.backgroundSize = "cover";
+                    document.body.style.backgroundAttachment = "fixed";
+                """.trimIndent()
+                webView.evaluateJavascript("javascript:(function() { $currentThemeScript })()", null)
+            }.show()
     }
 }
