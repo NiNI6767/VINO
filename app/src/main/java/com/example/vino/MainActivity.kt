@@ -118,35 +118,32 @@ class MainActivity : AppCompatActivity() {
     private fun showCustomUrlDialog(webView: WebView) {
         val input = EditText(this)
         input.hint = "Вставте посилання на картинку"
-        input.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
-        input.setTextColor(android.graphics.Color.WHITE)
 
-        // Створюємо контейнер
-        val container = LinearLayout(this)
-        container.orientation = LinearLayout.VERTICAL
-
-        // Перетворюємо 24dp (стандартний відступ заголовка Android) у пікселі
-        val density = resources.displayMetrics.density
-        val paddingInDp = (24 * density).toInt()
-
-        // Встановлюємо відступ саме для КОНТЕЙНЕРА (зліва та справа)
-        container.setPadding(paddingInDp, 20, paddingInDp, 0)
-
-        // Для самого EditText ставимо MATCH_PARENT, щоб він розтягнувся всередині відступів
+        // Твій оригінальний дизайн параметрів
         val lp = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
+
+        // ВСТАНОВЛЮЄМО ВЕЛИКИЙ ВІДСТУП (спробуй 85 або 100)
+        lp.setMargins(85, 0, 85, 0)
         input.layoutParams = lp
 
+        // Створюємо контейнер (БЕЗ НЬОГО ВІДСТУП НЕ ПРАЦЮЄ)
+        val container = LinearLayout(this)
         container.addView(input)
 
-        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+        AlertDialog.Builder(this)
             .setTitle("Ваша тема")
-            .setView(container) // Тепер лінія почнеться рівно під "В" у слові "Ваша"
+            .setView(container) // Передаємо контейнер, щоб відступи застосувалися
             .setPositiveButton("Застосувати") { _, _ ->
                 val url = input.text.toString()
-                // ... твій код завантаження теми
+                currentThemeScript = """
+                document.body.style.backgroundImage = "url('$url')";
+                document.body.style.backgroundSize = "cover";
+                document.body.style.backgroundAttachment = "fixed";
+            """.trimIndent()
+                webView.evaluateJavascript("javascript:(function() { $currentThemeScript })()", null)
             }
             .show()
     }
