@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="#5D5D5D"
+        android:background="#454545"
         android:layout_alignParentTop="true">
 
         <Button
@@ -49,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#545454"
+        android:background="#1A1A1A"
         android:layout_alignParentBottom="true"
         android:elevation="8dp">
 
