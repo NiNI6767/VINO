@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showCustomUrlDialog(webView: WebView) {
         val input = EditText(this)
-        input.hint = "Вставте посилання на картинку"
+        input.hint = "     Вставте посилання на картинку"
         val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         input.layoutParams = lp
 
