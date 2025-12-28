@@ -23,8 +23,8 @@ class MainActivity : AppCompatActivity() {
         val webView: WebView = findViewById(R.id.myWebView)
         val urlInput: EditText = findViewById(R.id.urlInput)
         val goButton: Button = findViewById(R.id.goButton)
-        val vinoButton: Button = findViewById(R.id.vinoButton)
-        val themeButton: Button = findViewById(R.id.themeButton)
+        val themeButton = findViewById<Button>(R.id.themeButton)
+        val vinoButton = findViewById<Button>(R.id.vinoButton)
 
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
