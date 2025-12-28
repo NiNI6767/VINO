@@ -11,15 +11,17 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="#454545"
-        android:layout_alignParentTop="true">
+        android:background="#1F1F1F"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical">
 
         <Button
             android:id="@+id/vinoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#664FA3"
             android:text="VINO"
-            android:backgroundTint="#664FA3" />
+            android:textColor="#FFFFFF" />
 
         <EditText
             android:id="@+id/urlInput"
@@ -28,19 +30,23 @@
             android:layout_weight="1"
             android:hint="Пошук..."
             android:textColor="#FFFFFF"
+            android:textColorHint="#BBBBBB"
+            android:backgroundTint="#FFFFFF"
             android:layout_marginHorizontal="8dp"/>
 
         <Button
             android:id="@+id/goButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Шукати" />
+            android:text="Шукати"
+            android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/themeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Тема"
+            android:textColor="#FFFFFF"
             android:layout_marginStart="4dp" />
     </LinearLayout>
 
